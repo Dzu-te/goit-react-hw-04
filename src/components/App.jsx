@@ -1,59 +1,40 @@
 import "./App.css";
-import { ContactForm } from "./ContactForm/ContactForm";
-import { ContactList } from "./ContactList/ContactList";
-import { SearchBox } from "./SearchBox/SearchBox";
-import { useState, useEffect } from "react";
-import { nanoid } from "nanoid";
-
-const initialContacts = [
-  { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-  { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-  { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-  { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
-];
+import { SearchBar } from "./SearchBar/SearchBar";
+import { useEffect, useState } from "react";
+import { ImageGallery } from "./ImageGallery/ImageGallery";
+import { Loader } from "./Loader/Loader";
+import { ErrorMessage } from "./ErrorMessage/ErrorMessage.jsx";
+import { requestPhotos } from "../services/api";
 
 export default function App() {
-  const [contacts, setContacts] = useState(initialContacts);
-  const [searchItem, setSearchItem] = useState("");
-
-  const addContact = (name, number) => {
-    const newContact = {
-      id: nanoid(),
-      name: name,
-      number: number,
-    };
-    setContacts((prevContacts) => [...prevContacts, newContact]);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchItem(event.target.value);
-  };
-
-  const handleContactDelete = (id) => {
-    setContacts(contacts.filter((contact) => contact.id !== id));
-  };
-
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(searchItem.toLowerCase())
-  );
+  const [photos, setPhotos] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contacts));
-  }, [contacts]);
-
+    async function fetchData() {
+      try {
+        setLoading(true);
+        setIsError(false);
+        const data = await requestPhotos();
+        setPhotos(data);
+      } catch (error) {
+        setIsError(true);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
   return (
-    <div className="generalContainer">
-      <h1>Phonebook</h1>
-      <ContactForm addContact={addContact} />
-      <SearchBox
-        handleSearchChange={handleSearchChange}
-        searchItem={searchItem}
-      />
-      <ContactList
-        contacts={filteredContacts}
-        setContacts={setContacts}
-        handleContactDelete={handleContactDelete}
-      />
+    <div>
+      <h1>Search photo gallery</h1>
+      {isError && <ErrorMessage error={error} />}
+      {loading && <Loader />}
+      <ImageGallery photos={photos} />
+      <SearchBar />
     </div>
   );
 }
