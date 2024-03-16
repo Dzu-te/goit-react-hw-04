@@ -1,0 +1,13 @@
+.imageGalleryList {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  list-style-type: none;
+  gap: 10px;
+}
+
+img {
+  display: block;
+  /* max-width: 40px;
+  max-height: 30px; */
+}

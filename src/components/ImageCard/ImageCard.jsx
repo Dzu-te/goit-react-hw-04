@@ -1,9 +1,8 @@
-export const ImageCard = ({ photo }) => {
+export const ImageCard = ({ photo, onClick }) => {
   return (
     <li>
       <img
-        width={250}
-        height={200}
+        onClick={onClick}
         src={photo.urls.small}
         alt={photo.alt_description}
       />
