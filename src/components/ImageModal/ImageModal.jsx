@@ -5,6 +5,9 @@ export const ImageModal = ({ isOpen, closeModal, photo }) => {
   if (!photo) {
     return null;
   }
+
+  const { alt, src } = photo;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -12,7 +15,7 @@ export const ImageModal = ({ isOpen, closeModal, photo }) => {
       contentLabel="Image Modal"
     >
       <button onClick={closeModal}>Close Modal</button>
-      <img src={photo.urls.regular} alt={photo.alt_description} />
+      <img src={src} alt={alt} />
     </Modal>
   );
 };

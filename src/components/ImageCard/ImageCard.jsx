@@ -1,11 +1,8 @@
 export const ImageCard = ({ photo, onClick }) => {
+  const { alt, src } = photo;
   return (
     <li>
-      <img
-        onClick={onClick}
-        src={photo.urls.small}
-        alt={photo.alt_description}
-      />
+      <img onClick={onClick} src={src} alt={alt} />
     </li>
   );
 };

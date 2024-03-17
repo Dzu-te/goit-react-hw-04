@@ -1,21 +1,36 @@
-import { Field, Form, Formik } from "formik";
+import { Field, Form, Formik, ErrorMessage } from "formik";
+import toast, { Toaster } from "react-hot-toast";
 
 export const SearchBar = ({ onSetSearchQuery }) => {
+  const notify = () => toast.error("Please enter something");
+
   return (
     <Formik
       initialValues={{ query: "" }}
-      onSubmit={(values) => {
+      onSubmit={(values, { setSubmitting }) => {
+        if (!values.query.trim()) {
+          notify();
+          setSubmitting(false);
+          return;
+        }
         onSetSearchQuery(values.query);
+        setSubmitting(false);
       }}
     >
-      <Form>
-        <Field
-          placeholder="Search images and photos"
-          type="text"
-          name="query"
-        />
-        <button type="submit">Search</button>
-      </Form>
+      {({ isSubmitting }) => (
+        <Form>
+          <Field
+            placeholder="Search images and photos"
+            type="text"
+            name="query"
+          />
+          <ErrorMessage name="query" component="div" className="error" />
+          <button type="submit" disabled={isSubmitting}>
+            Search
+          </button>
+          <Toaster />
+        </Form>
+      )}
     </Formik>
   );
 };

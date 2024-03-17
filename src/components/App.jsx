@@ -21,6 +21,8 @@ export default function App() {
   const [moreAvailable, setMoreAvailable] = useState(true);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   useEffect(() => {
     async function fetchData() {
@@ -37,8 +39,10 @@ export default function App() {
         setLoading(false);
       }
     }
-    fetchData();
-  }, []);
+    if (!searchQuery) {
+      fetchData();
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
     if (searchQuery === null) return;
@@ -71,8 +75,6 @@ export default function App() {
       const newData = await requestNextPhotos();
       setPhotos((prevPhotos) => [...prevPhotos, ...newData]);
       setMoreAvailable(!!newData.length);
-      // Зробіть запит на наступну порцію зображень та додайте їх до поточного масиву
-      // Потім оновіть moreAvailable відповідно до результату запиту
     } catch (error) {
       setIsError(true);
       setError(error.message);
