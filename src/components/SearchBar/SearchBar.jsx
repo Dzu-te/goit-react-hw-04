@@ -1,9 +1,9 @@
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 
-export const SearchBar = ({ onSetSearchQuery }) => {
-  const notify = () => toast.error("Please enter something");
+const notify = () => toast.error("Please enter something");
 
+export const SearchBar = ({ onSetSearchQuery }) => {
   return (
     <Formik
       initialValues={{ query: "" }}

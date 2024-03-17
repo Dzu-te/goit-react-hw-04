@@ -1,12 +1,10 @@
 import Modal from "react-modal";
 Modal.setAppElement("#root");
 
-export const ImageModal = ({ isOpen, closeModal, photo }) => {
-  if (!photo) {
+export const ImageModal = ({ isOpen, closeModal, src, alt }) => {
+  if (!isOpen) {
     return null;
   }
-
-  const { alt, src } = photo;
 
   return (
     <Modal

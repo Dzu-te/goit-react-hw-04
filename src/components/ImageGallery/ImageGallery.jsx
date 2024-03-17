@@ -15,6 +15,8 @@ export const ImageGallery = ({ photos, openModal }) => {
             <ImageCard
               key={photo.id}
               photo={{ alt, src: small }}
+              src={small}
+              alt={alt}
               onClick={() => openModal({ alt, src: regular })}
             />
           );
