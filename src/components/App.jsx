@@ -1,10 +1,10 @@
 import "./App.css";
 import { SearchBar } from "./SearchBar/SearchBar";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
 import { ErrorMessage } from "./ErrorMessage/ErrorMessage.jsx";
-import { LIMIT, requestPhotos } from "../services/api";
+import { requestPhotos } from "../services/api";
 import { LoadMoreBtn } from "./LoadMoreBtn/LoadMoreBtn";
 import { ImageModal } from "./ImageModal/ImageModal";
 
@@ -14,47 +14,51 @@ export default function App() {
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState(null);
   const [moreAvailable, setMoreAvailable] = useState(true);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [page, setPage] = useState(1);
-  const fetchData = async (query, page) => {
-    try {
-      setLoading(true);
-      setError("");
-      const data = await requestPhotos(query, page);
-      if (query !== searchQuery) {
-        setPhotos(data);
-      } else {
-        setPhotos((prevState) => [...prevState, ...data]);
-      }
+  const fetchData = useCallback(
+    async (query, page) => {
+      try {
+        setLoading(true);
+        setError("");
+        const data = await requestPhotos(query, page);
+        if (query !== searchQuery) {
+          setPhotos(data.results);
+        } else {
+          setPhotos((prevState) => [...(prevState || []), ...data.results]);
+        }
 
-      setMoreAvailable(data.length === LIMIT);
-    } catch (error) {
-      setError(error.message);
-      setPhotos(null);
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setMoreAvailable(data.total_pages !== page);
+      } catch (error) {
+        setError(error.message);
+        setPhotos(null);
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchQuery]
+  );
+
+  useEffect(() => {
+    if (!searchQuery) return;
+    fetchData(searchQuery, page);
+  }, [searchQuery, page, fetchData]);
 
   const onSetSearchQuery = (newQuery) => {
     setSearchQuery(newQuery);
-    fetchData(newQuery, page);
+    setPhotos(null);
   };
 
   const openModal = (photo) => {
     setSelectedPhoto(photo);
-    setModalIsOpen(true);
   };
 
   const closeModal = () => {
     setSelectedPhoto(null);
-    setModalIsOpen(false);
   };
 
   const loadMorePhotos = () => {
-    fetchData(searchQuery, page + 1);
     setPage((prevState) => prevState + 1);
   };
 
@@ -69,12 +73,14 @@ export default function App() {
       {moreAvailable && photos?.length > 0 && (
         <LoadMoreBtn loadMorePhotos={loadMorePhotos} />
       )}
-      <ImageModal
-        isOpen={modalIsOpen}
-        closeModal={closeModal}
-        src={selectedPhoto?.urls.regular}
-        alt={selectedPhoto?.alt_description}
-      />
+      {selectedPhoto && (
+        <ImageModal
+          isOpen={!!selectedPhoto}
+          closeModal={closeModal}
+          src={selectedPhoto?.src}
+          alt={selectedPhoto?.alt}
+        />
+      )}
     </div>
   );
 }

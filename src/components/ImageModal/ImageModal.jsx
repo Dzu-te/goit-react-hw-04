@@ -1,10 +1,10 @@
+import { useEffect } from "react";
 import Modal from "react-modal";
-Modal.setAppElement("#root");
 
 export const ImageModal = ({ isOpen, closeModal, src, alt }) => {
-  if (!isOpen) {
-    return null;
-  }
+  useEffect(() => {
+    Modal.setAppElement("#root");
+  }, []);
 
   return (
     <Modal

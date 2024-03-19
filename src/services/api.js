@@ -11,7 +11,7 @@ export const requestPhotos = async (searchQuery, page) => {
   });
 
   const { data } = await axios.get(
-    `https://api.unsplash.com/photos/?${params.toString()}`
+    `https://api.unsplash.com/search/photos?${params.toString()}`
   );
   return data;
 };
