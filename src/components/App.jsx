@@ -48,6 +48,7 @@ export default function App() {
   const onSetSearchQuery = (newQuery) => {
     setSearchQuery(newQuery);
     setPhotos(null);
+    setPage(1);
   };
 
   const openModal = (photo) => {
